@@ -1,7 +1,7 @@
 import sys
 import unittest
 sys.path.insert(0, '../')
-from spiders.db import DB, YahooSQLite
+from spiders.db import YahooSQLite
 
 
 class DbTest(unittest.TestCase):
