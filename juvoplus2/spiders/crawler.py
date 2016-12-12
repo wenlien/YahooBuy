@@ -16,6 +16,8 @@ class YahooCrawler(scrapy.Spider):
     start_urls = ['https://tw.buy.yahoo.com/catalog/ajax/recmdHotNew?segmentId=999999&subId=24,10,28,30,478,90,464,35,536,613&t=1481549824762']
 
     def parse(self, response):
+        self.init_db()
+
         res = json.loads(BeautifulSoup(response.body).text)
         bb = res['billboard']
         tabs = bb['tabs'] + bb['othertab']
@@ -31,15 +33,26 @@ class YahooCrawler(scrapy.Spider):
 
             mainitem = panel['mainitem']
             main_desc = mainitem['desc']
-            main_price = float(mainitem['price'].replace('$', ''))
+            try:
+                main_price = float(mainitem['price'].replace('$', ''))
+            except:
+                main_price = -1
             self.insert_product(category_id, main_desc, main_price)
             # print(u'%s: %s' % (main_desc, main_price))
             for pditem in panel['pditem']:
                 pd_desc = pditem['desc']
-                pd_price = float(pditem['price'].replace('$', ''))
+                try:
+                    pd_price = float(pditem['price'].replace('$', ''))
+                except:
+                    pd_price = -1
                 self.insert_product(category_id, pd_desc, pd_price)
                 # print(u'%s: %s' % (pd_desc, pd_price))
             counter += 1
+
+    def init_db(self):
+        ys = YahooSQLite()
+        if not ys.is_init():
+            ys.init_schema()
 
     def insert_category(self, category_name):
         ys = YahooSQLite()
