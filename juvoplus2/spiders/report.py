@@ -31,13 +31,13 @@ class SQLStrategy:
 
     def get_SQL_by_usecase(self, sort_up_down=SortUpDown.DESC):
         if self.usecase == UseCases.TOP_TEN_FOR_ALL:
-            SQL  = 'select c.category_name, "," , p.product_name, ",", p.price from %s as c, %s as p ' % (SCHEMA.CATEGORY, SCHEMA.PRODUCT)
+            SQL  = 'select c.category_name, p.product_name, p.price from %s as c, %s as p ' % (SCHEMA.CATEGORY, SCHEMA.PRODUCT)
             SQL += 'where 1 = 1 '
             SQL += '  and c.category_id = p.category_id '
             SQL += 'order by price %s ' % sort_up_down
             SQL += 'limit 10 '
         elif self.usecase == UseCases.TOP_TWO_PER_CATEGORY:
-            SQL  = 'select c.category_name, ",", p.product_name, ",", p.price from %s as c, %s as p, ' % (SCHEMA.CATEGORY, SCHEMA.PRODUCT)
+            SQL  = 'select c.category_name, p.product_name, p.price from %s as c, %s as p, ' % (SCHEMA.CATEGORY, SCHEMA.PRODUCT)
             SQL += '  (select product_id from %s where product_id %s 5 in (1, 2)) as t ' % (SCHEMA.PRODUCT, '%')
             SQL += 'where 1=1 '
             SQL += '  and p.product_id = t.product_id '
@@ -54,10 +54,8 @@ class Report(object):
     def print_report(self, usecase):
         SQL = SQLStrategy(usecase).get_SQL_by_usecase(self.sort_up_down)
         c = self.conn.cursor()
-        for row in c.execute(SQL):
-            for item in row:
-                print(item, end='')
-            print('')
+        for (category_name, product_name, price) in c.execute(SQL):
+            print("%s | %s | $%s" % (category_name, product_name, price if price != -1 else 'special price'))
 
 
 def get_arg_parser():
@@ -90,11 +88,11 @@ def is_valid_args(args):
 
 def main():
     args = get_args(sys.argv[1:])
-    is_valid_args(args)
     if args.list_usecases:
         for use_case in UseCases.get_use_cases():
             print(use_case)
     elif args.usecases:
+        is_valid_args(args)
         report = Report(args.sort_up_down)
         report.print_report(args.usecases)
 
