@@ -16,6 +16,8 @@ class SCHEMA:
     SELECT_PRODUCT = 'select * from %s' % PRODUCT
     SELECT_CATEGORY_PRODUCT = 'select c.category_name, p.product_name, p.price from %s as c, %s as p where c.category_id = p.category_id' % (CATEGORY, PRODUCT)
     SELECT_CATEGORY_ID_BY_NAME = 'select category_id from %s where category_name="%s"' % (CATEGORY, "%s")
+    INSERT_CATEGORY = 'insert into %s(category_name) values("%s")' % (CATEGORY, "%s")
+    INSERT_PRODUCT = 'insert into %s(category_id, product_name, price) values(%s, "%s", %s)' % (PRODUCT, "%s", "%s", "%s")
 
 
 class SQLType:
@@ -75,10 +77,10 @@ class YahooSQLite(object):
         print('init schema done!')
 
     def insert_category(self, category_name):
-        self.run_DML('''insert into %s(category_name) values("%s")''' % (SCHEMA.CATEGORY, category_name))
+        self.run_DML(SCHEMA.INSERT_CATEGORY % category_name)
 
     def insert_product(self, category_id, product_name, price):
-        self.run_DML('''insert into %s(category_id, product_name, price) values(%s, "%s", %s)''' % (SCHEMA.PRODUCT, category_id, product_name, price))
+        self.run_DML(SCHEMA.INSERT_PRODUCT % (category_id, product_name, price))
 
     def insert_many(self, name_price_list):
         for name, price in name_price_list:
