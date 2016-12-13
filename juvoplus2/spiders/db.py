@@ -4,7 +4,7 @@ import os
 
 
 class DB:
-    DATAFILE = '/tmp/sqlite.db'
+    DATAFILE = './Yahoo.sqlite'
 
 
 class SCHEMA:

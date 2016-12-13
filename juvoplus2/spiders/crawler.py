@@ -7,8 +7,7 @@ from spiders.db import YahooSQLite
 
 class YahooCrawler(scrapy.Spider):
     name = 'Yahoo'
-    # start_urls = ['https://tw.buy.yahoo.com/catalog/ajax/recmdHotNew']
-    start_urls = ['https://tw.buy.yahoo.com/catalog/ajax/recmdHotNew?segmentId=999999&subId=24,10,28,30,478,90,464,35,536,613&t=1481549824762']
+    start_urls = ['https://tw.buy.yahoo.com/catalog/ajax/recmdHotNew']
 
     def parse(self, response):
         self.init_db()
@@ -16,8 +15,6 @@ class YahooCrawler(scrapy.Spider):
         res = json.loads(BeautifulSoup(response.body).text)
         bb = res['billboard']
         tabs = bb['tabs'] + bb['othertab']
-        # for tab in tabs:
-        #     print(tab['label'])
         panels = bb['panels']
 
         counter = 0
@@ -33,7 +30,6 @@ class YahooCrawler(scrapy.Spider):
             except:
                 main_price = -1
             self.insert_product(category_id, main_desc, main_price)
-            # print(u'%s: %s' % (main_desc, main_price))
             for pditem in panel['pditem']:
                 pd_desc = pditem['desc']
                 try:
@@ -41,11 +37,11 @@ class YahooCrawler(scrapy.Spider):
                 except:
                     pd_price = -1
                 self.insert_product(category_id, pd_desc, pd_price)
-                # print(u'%s: %s' % (pd_desc, pd_price))
             counter += 1
 
     def init_db(self):
         ys = YahooSQLite()
+        ys.destroy_db()
         if not ys.is_init():
             ys.init_schema()
 
