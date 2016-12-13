@@ -1,6 +1,5 @@
-import sys
+# -*- coding: utf8 -*-
 import unittest
-sys.path.insert(0, '../')
 from spiders.db import YahooSQLite
 
 

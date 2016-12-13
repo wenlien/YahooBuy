@@ -1,13 +1,8 @@
-#!/usr/local/bin/python3
 # -*- coding: utf8 -*-
 import scrapy
 from bs4 import BeautifulSoup
 import json
-# import codecs
-# import sys
-# UTF8Writer = codecs.getwriter('utf8')
-# sys.stdout = UTF8Writer(sys.stdout)
-from .db import YahooSQLite
+from spiders.db import YahooSQLite
 
 
 class YahooCrawler(scrapy.Spider):
