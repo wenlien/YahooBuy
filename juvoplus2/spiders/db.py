@@ -10,14 +10,14 @@ class DB:
 class SCHEMA:
     CATEGORY = 'category'
     PRODUCT = 'product'
-    CREATE_CATEGORY = 'CREATE TABLE %s(category_id INTEGER PRIMARY KEY AUTOINCREMENT, category_name text);' % CATEGORY
-    CREATE_PRODUCT = 'CREATE TABLE %s(product_id INTEGER PRIMARY KEY AUTOINCREMENT, category_id INTEGER, product_name, price real);' % PRODUCT
-    SELECT_CATEGORY = 'select * from %s' % CATEGORY
-    SELECT_PRODUCT = 'select * from %s' % PRODUCT
-    SELECT_CATEGORY_PRODUCT = 'select c.category_name, p.product_name, p.price from %s as c, %s as p where c.category_id = p.category_id' % (CATEGORY, PRODUCT)
-    SELECT_CATEGORY_ID_BY_NAME = 'select category_id from %s where category_name="%s"' % (CATEGORY, "%s")
-    INSERT_CATEGORY = 'insert into %s(category_name) values("%s")' % (CATEGORY, "%s")
-    INSERT_PRODUCT = 'insert into %s(category_id, product_name, price) values(%s, "%s", %s)' % (PRODUCT, "%s", "%s", "%s")
+    CREATE_CATEGORY = 'CREATE TABLE %s(category_id INTEGER PRIMARY KEY AUTOINCREMENT, category_name TEXT);' % CATEGORY
+    CREATE_PRODUCT = 'CREATE TABLE %s(product_id INTEGER PRIMARY KEY AUTOINCREMENT, category_id INTEGER, product_name TEXT, price REAL);' % PRODUCT
+    SELECT_CATEGORY = 'SELECT * FROM %s' % CATEGORY
+    SELECT_PRODUCT = 'SELECT * FROM %s' % PRODUCT
+    SELECT_CATEGORY_PRODUCT = 'SELECT c.category_name, p.product_name, p.price FROM %s as c, %s as p WHERE c.category_id = p.category_id' % (CATEGORY, PRODUCT)
+    SELECT_CATEGORY_ID_BY_NAME = 'SELECT category_id FROM %s WHERE category_name="%s"' % (CATEGORY, "%s")
+    INSERT_CATEGORY = 'INSERT INTO %s(category_name) VALUES("%s")' % (CATEGORY, "%s")
+    INSERT_PRODUCT = 'INSERT INTO %s(category_id, product_name, price) VALUES(%s, "%s", %s)' % (PRODUCT, "%s", "%s", "%s")
 
 
 class SQLType:
@@ -86,23 +86,20 @@ class YahooSQLite(object):
         for name, price in name_price_list:
             self.insert_product(name, price)
 
-    def query_category_data(self):
-        for row in self.run_DML(SCHEMA.SELECT_CATEGORY):
+    def print_result_set(self, SQL):
+        for row in self.run_DML(SQL):
             for data in row:
                 print('%s ' % data, end='')
             print('')
+
+    def query_category_data(self):
+        self.print_result_set(SCHEMA.SELECT_CATEGORY)
 
     def query_product_data(self):
-        for row in self.run_DML(SCHEMA.SELECT_PRODUCT):
-            for data in row:
-                print('%s ' % data, end='')
-            print('')
+        self.print_result_set(SCHEMA.SELECT_PRODUCT)
 
     def query_category_product(self):
-        for row in self.run_DML(SCHEMA.SELECT_CATEGORY_PRODUCT):
-            for data in row:
-                print('%s ' % data, end='')
-            print('')
+        self.print_result_set(SCHEMA.SELECT_CATEGORY_PRODUCT)
 
     def query_category_id_by_name(self, category_name):
         category_id = None
